@@ -47,37 +47,47 @@ if __name__ == "__main__":
 
     logging.root.info("Configuring build")
     if args.target.startswith("linux"):
-        builder.execute(args, [
-            "cmake",
-            f"-H{source_dir}",
-            f"-B{args.build_dir}",
-            f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
-            f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
-            "-DJSONCPP_WITH_TESTS=OFF",
-        ], env=env)
+        builder.execute(
+            args,
+            [
+                "cmake",
+                f"-H{source_dir}",
+                f"-B{args.build_dir}",
+                f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
+                f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
+                "-DJSONCPP_WITH_TESTS=OFF",
+            ],
+            env=env,
+        )
 
     elif args.target.startswith("android"):
-        builder.execute(args, [
-            "cmake",
-            f"-H{source_dir}",
-            f"-B{args.build_dir}",
-            f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
-            f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
-            f"-DCMAKE_TOOLCHAIN_FILE={os.environ['ANDROID_NDK']}/{args.target}.toolchain.cmake",
-            "-DJSONCPP_WITH_TESTS=OFF",
-            "-DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF",
-        ])
+        builder.execute(
+            args,
+            [
+                "cmake",
+                f"-H{source_dir}",
+                f"-B{args.build_dir}",
+                f"-DCMAKE_STAGING_PREFIX={args.install_dir}",
+                f"-DCMAKE_INSTALL_PREFIX={args.install_prefix}",
+                f"-DCMAKE_TOOLCHAIN_FILE={os.environ['ANDROID_NDK']}/{args.target}.toolchain.cmake",
+                "-DJSONCPP_WITH_TESTS=OFF",
+                "-DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF",
+            ],
+        )
 
     logging.root.info("Building")
-    builder.execute(args, [
-        "cmake",
-        "--build",
-        args.build_dir,
-        "--target",
-        "install",
-        "--",
-        "-j",
-        args.num_threads,
-    ])
+    builder.execute(
+        args,
+        [
+            "cmake",
+            "--build",
+            args.build_dir,
+            "--target",
+            "install",
+            "--",
+            "-j",
+            args.num_threads,
+        ],
+    )
 
     builder.create_package(args)
